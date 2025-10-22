@@ -1,6 +1,6 @@
-mod training;
+mod training_session;
 
 fn main() {
-    let training = training::TrainingSession::new();
+    let training = training_session::Training::new();
     println!("training {training:?}");
 }

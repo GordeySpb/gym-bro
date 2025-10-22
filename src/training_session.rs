@@ -10,11 +10,11 @@ use time;
 
 
 #[derive(Debug)]
-pub struct TrainingSession {
+pub struct Training {
     date: time::Date
 }
 
-impl TrainingSession {
+impl Training {
     pub fn new() -> Self {
         Self {
             date: time::OffsetDateTime::now_utc().date()
