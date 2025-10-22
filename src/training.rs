@@ -24,12 +24,12 @@ impl TrainingSession {
     pub fn week_day_russian(&self) -> &str {
         match &self.date.weekday() {
             time::Weekday::Monday => "Понедельник",
-            time::Weekday::Tuesday => todo!(),
-            time::Weekday::Wednesday => todo!(),
-            time::Weekday::Thursday => todo!(),
-            time::Weekday::Friday => todo!(),
-            time::Weekday::Saturday => todo!(),
-            time::Weekday::Sunday => todo!(),
+            time::Weekday::Tuesday => "Вторник",
+            time::Weekday::Wednesday => "Среда",
+            time::Weekday::Thursday => "Четверг",
+            time::Weekday::Friday => "Пятница",
+            time::Weekday::Saturday => "Суббота",
+            time::Weekday::Sunday => "Воскресенье",
         }
     }
 }
