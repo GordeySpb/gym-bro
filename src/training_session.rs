@@ -29,15 +29,18 @@ impl TrainingSessionBuilder {
         }
     }
 
-    // pub fn week_day_russian(&self) -> &str { 
-    //     match &self.date.weekday() {
-    //         time::Weekday::Monday => "Понедельник",
-    //         time::Weekday::Tuesday => "Вторник",
-    //         time::Weekday::Wednesday => "Среда",
-    //         time::Weekday::Thursday => "Четверг",
-    //         time::Weekday::Friday => "Пятница",
-    //         time::Weekday::Saturday => "Суббота",
-    //         time::Weekday::Sunday => "Воскресенье",
-    //     }
-    // }
+    pub fn week_day_russian(&self) -> Result<&str, String> {
+        match &self.date {
+            Some(date) => match date.weekday() {
+                time::Weekday::Monday => Ok("Понедельник"),
+                time::Weekday::Tuesday => Ok("Вторник"),
+                time::Weekday::Wednesday => Ok("Среда"),
+                time::Weekday::Thursday => Ok("Четверг"),
+                time::Weekday::Friday => Ok("Пятница"),
+                time::Weekday::Saturday => Ok("Суббота"),
+                time::Weekday::Sunday => Ok("Воскресенье"),
+            },
+            None => Err("Date is not set".to_string()),
+        }
+    }
 }
