@@ -1,35 +1,43 @@
-use time;
-
-// training 
-// -- start date/time 
-// -- end date/time
-// -- day
-// -- time
-// -- date
-// -- exercises vec![]
-
+use time::{self, Date, Duration};
 
 #[derive(Debug)]
-pub struct Training {
-    date: time::Date
+enum TrainingCreationState {
+    WaitingForDate,
+    WaitingForExercises,
+    WaitingForDuration,
+    WaitingForNotes,
+    Completed,
 }
 
-impl Training {
+#[derive(Debug)]
+pub struct TrainingSessionBuilder {
+    date: Option<Date>,
+    exercises: Vec<String>,
+    duration: Option<Duration>,
+    notes: Option<String>,
+    state: TrainingCreationState,
+}
+
+impl TrainingSessionBuilder {
     pub fn new() -> Self {
         Self {
-            date: time::OffsetDateTime::now_utc().date()
+            date: None,
+            exercises: vec![],
+            duration: None,
+            notes: None,
+            state: TrainingCreationState::WaitingForDate,
         }
     }
 
-    pub fn week_day_russian(&self) -> &str {
-        match &self.date.weekday() {
-            time::Weekday::Monday => "Понедельник",
-            time::Weekday::Tuesday => "Вторник",
-            time::Weekday::Wednesday => "Среда",
-            time::Weekday::Thursday => "Четверг",
-            time::Weekday::Friday => "Пятница",
-            time::Weekday::Saturday => "Суббота",
-            time::Weekday::Sunday => "Воскресенье",
-        }
-    }
+    // pub fn week_day_russian(&self) -> &str { 
+    //     match &self.date.weekday() {
+    //         time::Weekday::Monday => "Понедельник",
+    //         time::Weekday::Tuesday => "Вторник",
+    //         time::Weekday::Wednesday => "Среда",
+    //         time::Weekday::Thursday => "Четверг",
+    //         time::Weekday::Friday => "Пятница",
+    //         time::Weekday::Saturday => "Суббота",
+    //         time::Weekday::Sunday => "Воскресенье",
+    //     }
+    // }
 }
