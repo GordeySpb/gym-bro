@@ -9,6 +9,13 @@ enum TrainingCreationState {
     Completed,
 }
 
+pub struct TrainingSession {
+    date: Date,
+    exercises: Vec<String>,
+    duration: Option<Duration>,
+    notes: String,
+}
+
 #[derive(Debug)]
 pub struct TrainingSessionBuilder {
     date: Option<Date>,
@@ -42,5 +49,14 @@ impl TrainingSessionBuilder {
             },
             None => Err("Date is not set".to_string()),
         }
+    }
+
+    pub fn build(self) -> Option<TrainingSession> {
+        Some(TrainingSession {
+            date: self.date?,
+            exercises: self.exercises,
+            duration: self.duration,
+            notes: self.notes?,
+        })
     }
 }
