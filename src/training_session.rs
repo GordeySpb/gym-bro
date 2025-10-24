@@ -1,4 +1,4 @@
-use time::{self, Date, Duration};
+use time::{self, Date, Duration, OffsetDateTime};
 
 #[derive(Debug)]
 enum TrainingCreationState {
@@ -34,6 +34,11 @@ impl TrainingSessionBuilder {
             notes: None,
             state: TrainingCreationState::WaitingForDate,
         }
+    }
+
+    pub fn set_date(&mut self) {
+        self.date = Some(OffsetDateTime::now_utc().date());
+        self.state = TrainingCreationState::WaitingForExercises;
     }
 
     pub fn week_day_russian(&self) -> Result<&str, String> {
