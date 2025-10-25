@@ -9,6 +9,7 @@ enum TrainingCreationState {
     Completed,
 }
 
+#[derive(Debug)]
 pub struct TrainingSession {
     date: Date,
     exercises: Vec<String>,
