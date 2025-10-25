@@ -41,6 +41,10 @@ impl TrainingSessionBuilder {
         self.state = TrainingCreationState::WaitingForExercises;
     }
 
+    pub fn set_notes(&mut self, notes: String) {
+        self.notes = Some(notes);
+    }
+
     pub fn week_day_russian(&self) -> Result<&str, String> {
         match &self.date {
             Some(date) => match date.weekday() {
