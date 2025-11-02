@@ -1,6 +1,8 @@
-mod training_session;
+use axum::{Router, routing::get};
 
-fn main() {
+mod training_session;
+#[tokio::main]
+async fn main() {
     let mut training_builder = training_session::TrainingSessionBuilder::new();
     training_builder.set_notes(String::from("some notes"));
 
@@ -14,4 +16,9 @@ fn main() {
     };
 
     println!("Training is {training:#?}");
+
+    let app = Router::new().route("/", get(|| async { "Gym Bro!" }));
+
+    let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();
+    axum::serve(listener, app).await.unwrap();
 }
