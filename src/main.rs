@@ -1,8 +1,10 @@
 use axum::{Router, routing::get};
 
+mod database;
 mod training_session;
+
 #[tokio::main]
-async fn main() {
+async fn main() -> anyhow::Result<()> {
     let mut training_builder = training_session::TrainingSessionBuilder::new();
     training_builder.set_notes(String::from("some notes"));
 
@@ -17,8 +19,13 @@ async fn main() {
 
     println!("Training is {training:#?}");
 
-    let app = Router::new().route("/", get(|| async { "Gym Bro!" }));
+    let pool = database::create_poll().await?;
+    println!("✅ Connected to DB");
 
-    let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();
-    axum::serve(listener, app).await.unwrap();
+    Ok(())
+
+    // let app = Router::new().route("/", get(|| async { "Gym Bro!" }));
+
+    // let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();
+    // axum::serve(listener, app).await.unwrap();
 }
