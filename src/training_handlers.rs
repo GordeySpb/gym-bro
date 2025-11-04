@@ -1,5 +1,7 @@
 use crate::database::DbPool;
-use crate::training_models::{ApiResponse, CreateTrainingRequest, TrainingSession};
+use crate::training_models::{
+    ApiResponse, CreateTrainingRequest, TrainingSession, UpdateTrainingRequest,
+};
 use axum::{
     Json,
     extract::{Path, State},
@@ -31,3 +33,49 @@ pub async fn create_training(
         data: training,
     }))
 }
+
+pub async fn update_training(
+    State(pool): State<DbPool>,
+    Path(id): Path<Uuid>,
+    Json(payload): Json<UpdateTrainingRequest>,
+) -> Result<Json<ApiResponse<TrainingSession>>, StatusCode> {
+    if payload.date.is_none()
+        && payload.notes.is_none()
+        && payload.exercises.is_none()
+        && payload.duration_minutes.is_none()
+    {
+        return Err(StatusCode::BAD_REQUEST);
+    }
+    let training = sqlx::query_as::<_, TrainingSession>(
+        r#"
+        UPDATE training_sessions 
+        SET 
+            date = COALESCE($1, date),
+            exercises = COALESCE($2, exercises),
+            duration_minutes = COALESCE($3, duration_minutes),
+            notes = COALESCE($4, notes)
+        WHERE id = $5
+        RETURNING *
+        "#,
+    )
+    .bind(payload.date)
+    .bind(payload.exercises)
+    .bind(payload.duration_minutes)
+    .bind(payload.notes)
+    .bind(id)
+    .fetch_optional(&pool)
+    .await
+    .map_err(|e| {
+        eprintln!("Ошибка обновления: {}", e);
+        StatusCode::INTERNAL_SERVER_ERROR
+    })?;
+
+    match training {
+        Some(training) => Ok(Json(ApiResponse {
+            success: true,
+            data: training,
+        })),
+        None => Err(StatusCode::NOT_FOUND),
+    }
+}
+

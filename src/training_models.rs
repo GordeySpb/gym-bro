@@ -20,6 +20,14 @@ pub struct CreateTrainingRequest {
     pub notes: Option<String>,
 }
 
+#[derive(Debug, Deserialize)]
+pub struct UpdateTrainingRequest {
+    pub date: Option<NaiveDate>,
+    pub exercises: Option<Vec<String>>,
+    pub duration_minutes: Option<i32>,
+    pub notes: Option<String>,
+}
+
 #[derive(Debug, Serialize)]
 pub struct ApiResponse<T> {
     pub success: bool,
