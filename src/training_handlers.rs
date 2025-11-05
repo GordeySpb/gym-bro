@@ -38,14 +38,7 @@ pub async fn update_training(
     State(pool): State<DbPool>,
     Path(id): Path<Uuid>,
     Json(payload): Json<UpdateTrainingRequest>,
-) -> Result<Json<ApiResponse<TrainingSession>>, StatusCode> {
-    if payload.date.is_none()
-        && payload.notes.is_none()
-        && payload.exercises.is_none()
-        && payload.duration_minutes.is_none()
-    {
-        return Err(StatusCode::BAD_REQUEST);
-    }
+) -> Result<Json<ApiResponse<TrainingSession>>, StatusCode> { 
     let training = sqlx::query_as::<_, TrainingSession>(
         r#"
         UPDATE training_sessions 
