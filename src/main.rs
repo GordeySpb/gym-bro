@@ -8,6 +8,8 @@ mod training_handlers;
 mod training_models;
 mod training_session;
 
+const SERVER_ADDRESS: &str = "0.0.0.0:3000";
+
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     let pool = database::create_poll().await?;
@@ -19,11 +21,11 @@ async fn main() -> anyhow::Result<()> {
         .route("/trainings/:id", put(training_handlers::update_training))
         .with_state(pool);
 
-    let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();
+    let listener = tokio::net::TcpListener::bind(SERVER_ADDRESS).await.unwrap();
 
     axum::serve(listener, app).await.unwrap();
 
-    println!("🚀 Server is started on http://{}", "0.0.0.0:3000");
+    println!("🚀 Server is started on http://{}", SERVER_ADDRESS);
 
     Ok(())
 }
