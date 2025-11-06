@@ -38,7 +38,7 @@ pub async fn update_training(
     State(pool): State<DbPool>,
     Path(id): Path<Uuid>,
     Json(payload): Json<UpdateTrainingRequest>,
-) -> Result<Json<ApiResponse<TrainingSession>>, StatusCode> { 
+) -> Result<Json<ApiResponse<TrainingSession>>, StatusCode> {
     let training = sqlx::query_as::<_, TrainingSession>(
         r#"
         UPDATE training_sessions 
@@ -72,3 +72,17 @@ pub async fn update_training(
     }
 }
 
+pub async fn get_all_trainings(
+    State(pool): State<DbPool>,
+) -> Result<Json<ApiResponse<Vec<TrainingSession>>>, StatusCode> {
+    let trainings =
+        sqlx::query_as::<_, TrainingSession>("SELECT * FROM training_sessions ORDER BY date ASC")
+            .fetch_all(&pool)
+            .await
+            .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+
+    Ok(Json(ApiResponse {
+        success: true,
+        data: trainings,
+    }))
+}

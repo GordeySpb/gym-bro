@@ -16,7 +16,7 @@ async fn main() -> anyhow::Result<()> {
     println!("✅ Connected to DB");
 
     let app = Router::new()
-        .route("/", get(|| async { "Gym Bro!" }))
+        .route("/trainings", get(training_handlers::get_all_trainings))
         .route("/trainings", post(training_handlers::create_training))
         .route("/trainings/:id", put(training_handlers::update_training))
         .with_state(pool);
