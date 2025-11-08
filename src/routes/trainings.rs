@@ -1,14 +1,16 @@
 use axum::{
     Json, Router,
-    extract::{State,Path},
-    http::StatusCode, 
+    extract::{Path, State},
+    http::StatusCode,
     routing::{delete, get, post, put},
 };
 use uuid::Uuid;
 
 use crate::{
     database::DbPool,
-    training_models::{ApiResponse, CreateTrainingRequest, TrainingSession, UpdateTrainingRequest},
+    models::training::{
+        ApiResponse, CreateTrainingRequest, TrainingSession, UpdateTrainingRequest,
+    },
 };
 
 const TRAININGS_PATH: &str = "/trainings";
