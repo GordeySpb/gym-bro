@@ -1,15 +1,42 @@
-use crate::database::DbPool;
-use crate::training_models::{
-    ApiResponse, CreateTrainingRequest, TrainingSession, UpdateTrainingRequest,
-};
 use axum::{
-    Json,
-    extract::{Path, State},
-    http::StatusCode,
+    Json, Router,
+    extract::{State,Path},
+    http::StatusCode, 
+    routing::{delete, get, post, put},
 };
 use uuid::Uuid;
 
-pub async fn create_training(
+use crate::{
+    database::DbPool,
+    training_models::{ApiResponse, CreateTrainingRequest, TrainingSession, UpdateTrainingRequest},
+};
+
+const TRAININGS_PATH: &str = "/trainings";
+const TRAINING_BY_ID_PATH: &str = "/trainings/:id";
+
+pub fn routes() -> Router<DbPool> {
+    Router::new()
+        .route(TRAININGS_PATH, get(get_all))
+        .route(TRAININGS_PATH, post(create))
+        .route(TRAINING_BY_ID_PATH, put(update))
+}
+
+pub async fn get_all(
+    State(pool): State<DbPool>,
+) -> Result<Json<ApiResponse<Vec<TrainingSession>>>, StatusCode> {
+    let trainings =
+        sqlx::query_as::<_, TrainingSession>("SELECT * FROM training_sessions ORDER BY date ASC")
+            .fetch_all(&pool)
+            .await
+            .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+
+    Ok(Json(ApiResponse {
+        success: true,
+        data: trainings,
+    }))
+}
+
+pub async fn create(
     State(pool): State<DbPool>,
     Json(payload): Json<CreateTrainingRequest>,
 ) -> Result<Json<ApiResponse<TrainingSession>>, StatusCode> {
@@ -34,7 +61,7 @@ pub async fn create_training(
     }))
 }
 
-pub async fn update_training(
+pub async fn update(
     State(pool): State<DbPool>,
     Path(id): Path<Uuid>,
     Json(payload): Json<UpdateTrainingRequest>,
@@ -70,19 +97,4 @@ pub async fn update_training(
         })),
         None => Err(StatusCode::NOT_FOUND),
     }
-}
-
-pub async fn get_all_trainings(
-    State(pool): State<DbPool>,
-) -> Result<Json<ApiResponse<Vec<TrainingSession>>>, StatusCode> {
-    let trainings =
-        sqlx::query_as::<_, TrainingSession>("SELECT * FROM training_sessions ORDER BY date ASC")
-            .fetch_all(&pool)
-            .await
-            .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
-
-    Ok(Json(ApiResponse {
-        success: true,
-        data: trainings,
-    }))
 }

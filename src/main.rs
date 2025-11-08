@@ -1,12 +1,9 @@
-use axum::{
-    Router,
-    routing::{get, post, put},
-};
-
 mod database;
-mod training_handlers;
+mod routes;
 mod training_models;
 mod training_session;
+
+use routes::create_router;
 
 const SERVER_ADDRESS: &str = "0.0.0.0:3000";
 
@@ -15,11 +12,7 @@ async fn main() -> anyhow::Result<()> {
     let pool = database::create_poll().await?;
     println!("✅ Connected to DB");
 
-    let app = Router::new()
-        .route("/trainings", get(training_handlers::get_all_trainings))
-        .route("/trainings", post(training_handlers::create_training))
-        .route("/trainings/:id", put(training_handlers::update_training))
-        .with_state(pool);
+    let app = create_router(pool);
 
     let listener = tokio::net::TcpListener::bind(SERVER_ADDRESS).await.unwrap();
 
