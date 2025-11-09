@@ -6,8 +6,6 @@ use std::env;
 pub type DbPool = Pool<Postgres>;
 
 pub async fn create_poll() -> Result<DbPool> {
-    dotenvy::dotenv().expect("failed to load .env file");
-
     let database_url = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
 
     let pool = PgPoolOptions::new()

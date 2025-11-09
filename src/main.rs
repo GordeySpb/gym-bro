@@ -9,6 +9,8 @@ const SERVER_ADDRESS: &str = "0.0.0.0:3000";
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
+    dotenvy::dotenv().expect("failed to load .env file");
+
     let pool = database::create_poll().await?;
     println!("✅ Connected to DB");
 
