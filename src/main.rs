@@ -1,6 +1,7 @@
 mod database;
 mod routes;
 mod models;
+mod app_config;
 mod training_session;
 
 use routes::create_router;
