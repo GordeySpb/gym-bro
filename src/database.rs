@@ -5,12 +5,11 @@ use std::env;
 
 pub type DbPool = Pool<Postgres>;
 
-pub async fn create_poll() -> Result<DbPool> {
-    let database_url = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
+pub async fn create_poll(db_url: &str) -> Result<DbPool> {
 
     let pool = PgPoolOptions::new()
         .max_connections(5)
-        .connect(&database_url)
+        .connect(&db_url)
         .await?;
 
     sqlx::query(
