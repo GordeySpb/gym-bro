@@ -1,12 +1,10 @@
-mod database;
-mod routes;
-mod models;
 mod app_config;
+mod database;
+mod models;
+mod routes;
 mod training_session;
 
 use routes::create_router;
-
-const SERVER_ADDRESS: &str = "0.0.0.0:3000";
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
@@ -18,11 +16,13 @@ async fn main() -> anyhow::Result<()> {
 
     let app = create_router(pool);
 
-    let listener = tokio::net::TcpListener::bind(SERVER_ADDRESS).await.unwrap();
+    let listener = tokio::net::TcpListener::bind(config.full_server_address()).await.unwrap();
+
+    println!("🚀 Server is started on http://{}", config.server_port());
 
     axum::serve(listener, app).await.unwrap();
 
-    println!("🚀 Server is started on http://{}", config.server_port());
+    println!("Server stopped");
 
     Ok(())
 }

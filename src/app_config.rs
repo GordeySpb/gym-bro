@@ -5,6 +5,7 @@ use std::env;
 pub struct AppConfig {
     db_url: String,
     server_port: u16,
+    server_address: String
 }
 
 impl AppConfig {
@@ -14,6 +15,7 @@ impl AppConfig {
             server_port: env::var("SERVER_PORT")
                 .unwrap_or_else(|_| "3000".to_string())
                 .parse()?,
+            server_address: env::var("SERVER_ADDRESS").context("SERVER_ADDRESS must be set")?
         })
     }
 
@@ -23,5 +25,9 @@ impl AppConfig {
 
     pub fn server_port(&self) -> &u16 {
         &self.server_port
+    }
+
+    pub fn full_server_address(&self) -> String {
+       format!("{}:{}", &self.server_address, &self.server_port) 
     }
 }
