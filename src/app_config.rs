@@ -1,21 +1,26 @@
-use anyhow::{Context, Result};
+use anyhow::{Context, Result, anyhow};
 use std::env;
 
 #[derive(Debug)]
 pub struct AppConfig {
     db_url: String,
     server_port: u16,
-    server_address: String
+    server_address: String,
 }
 
 impl AppConfig {
     pub fn from_env() -> Result<Self> {
+        let db_url = env::var("DATABASE_URL").context("DATABASE_URL must be set")?;
+        if !db_url.starts_with("postgres://postgres:") {
+            Err(anyhow!("DATABASE_URL must start with postgres://postgres:"))?
+        }
+
         Ok(Self {
-            db_url: env::var("DATABASE_URL").context("DATABASE_URL must be set")?,
+            db_url,
             server_port: env::var("SERVER_PORT")
                 .unwrap_or_else(|_| "3000".to_string())
                 .parse()?,
-            server_address: env::var("SERVER_ADDRESS").context("SERVER_ADDRESS must be set")?
+            server_address: env::var("SERVER_ADDRESS").context("SERVER_ADDRESS must be set")?,
         })
     }
 
@@ -28,6 +33,6 @@ impl AppConfig {
     }
 
     pub fn full_server_address(&self) -> String {
-       format!("{}:{}", &self.server_address, &self.server_port) 
+        format!("{}:{}", &self.server_address, &self.server_port)
     }
 }
