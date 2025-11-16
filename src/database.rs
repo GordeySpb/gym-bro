@@ -1,31 +1,18 @@
 use anyhow::Result;
 use sqlx::postgres::PgPoolOptions;
 use sqlx::{Pool, Postgres};
-use std::env;
 
 pub type DbPool = Pool<Postgres>;
 
 pub async fn create_poll(db_url: &str) -> Result<DbPool> {
-
     let pool = PgPoolOptions::new()
         .max_connections(5)
         .connect(&db_url)
         .await?;
 
-    sqlx::query(
-        r#"
-        CREATE TABLE IF NOT EXISTS training_sessions (
-            id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-            date DATE NOT NULL,
-            exercises TEXT[] NOT NULL,
-            duration_minutes INTEGER,
-            notes TEXT NOT NULL DEFAULT '',
-            created_at TIMESTAMP NOT NULL DEFAULT NOW()
-        )
-        "#,
-    )
-    .execute(&pool)
-    .await?;
+    println!("Applying migrations...");
+    sqlx::migrate!().run(&pool).await?;
+    println!("Migrations applied successfully!");
 
     Ok(pool)
 }
