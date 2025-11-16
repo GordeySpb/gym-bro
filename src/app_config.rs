@@ -6,6 +6,7 @@ pub struct AppConfig {
     db_url: String,
     server_port: u16,
     host: String,
+    jwt_secret: String
 }
 
 impl AppConfig {
@@ -15,12 +16,15 @@ impl AppConfig {
             Err(anyhow!("DATABASE_URL must start with postgres://postgres:"))?
         }
 
+        let jwt_secret = env::var("JWT_SECRET").context("JWT_SECRET must be set")?;
+
         Ok(Self {
             db_url,
             server_port: env::var("SERVER_PORT")
                 .unwrap_or_else(|_| "3000".to_string())
                 .parse()?,
             host: env::var("HOST").context("HOST must be set")?,
+            jwt_secret
         })
     }
 
@@ -34,5 +38,9 @@ impl AppConfig {
 
     pub fn full_server_address(&self) -> String {
         format!("{}:{}", &self.host, &self.server_port)
+    }
+
+    pub fn jwt_secret(&self) -> &String {
+        &self.jwt_secret
     }
 }
