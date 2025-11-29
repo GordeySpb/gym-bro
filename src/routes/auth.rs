@@ -32,6 +32,16 @@ pub async fn register(
     return Err(StatusCode::CONFLICT);
   }
 
+  if !payload.email.contains('@') || payload.email.len() < 5 {
+    eprintln!("email dosn't valid");
+    return Err(StatusCode::CONFLICT);
+  }
+
+  if !PasswordManager::is_strong_password(&payload.password) {
+    eprintln!("password not strong enaugh");
+    return Err(StatusCode::INTERNAL_SERVER_ERROR);
+  }
+
   let password_hash = PasswordManager::hash_password(&payload.password).map_err(|e| {
     eprintln!("Hashing password was wrong: {}", e);
     StatusCode::INTERNAL_SERVER_ERROR
