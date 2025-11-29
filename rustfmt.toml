@@ -1,0 +1,35 @@
+# rustfmt.toml
+
+# Максимальная длина строки
+max_width = 100
+
+# Размер отступа
+tab_spaces = 2
+hard_tabs = false
+
+# Стиль переноса строк
+newline_style = "Unix"
+
+# Импорты
+group_imports = "StdExternalCrate"
+imports_granularity = "Crate"
+reorder_imports = true
+
+# Комментарии
+wrap_comments = true
+comment_width = 100
+format_code_in_doc_comments = true
+
+# Выражения
+chain_width = 100
+fn_args_layout = "Tall"
+
+# Match выражения
+match_block_trailing_comma = true
+indent_style = "Block"
+
+# Пустые строки
+empty_item_single_line = true
+
+# Атрибуты
+format_strings = true

@@ -10,14 +10,12 @@ CREATE TABLE training_sessions (
 
 CREATE TABLE users (
     id UUID NOT NULL PRIMARY KEY DEFAULT gen_random_uuid(),
-    name VARCHAR(100) NOT NULL,
+    user_name VARCHAR(50) NOT NULL UNIQUE,
     email VARCHAR(255) NOT NULL UNIQUE,
-    photo VARCHAR NOT NULL DEFAULT 'default.png',
-    verified BOOLEAN NOT NULL DEFAULT FALSE,
-    password VARCHAR(100) NOT NULL,
-    role VARCHAR(50) NOT NULL DEFAULT 'user',
+    password_hash VARCHAR(100) NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
 CREATE INDEX users_email_idx ON users (email);
+CREATE INDEX idx_users_username ON users(user_name);

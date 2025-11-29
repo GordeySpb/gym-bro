@@ -16,7 +16,9 @@ async fn main() -> anyhow::Result<()> {
 
     let app = create_router(pool);
 
-    let listener = tokio::net::TcpListener::bind(config.full_server_address()).await.unwrap();
+    let listener = tokio::net::TcpListener::bind(config.full_server_address())
+        .await
+        .unwrap();
 
     println!("🚀 Server is started on http://{}", config.server_port());
 
