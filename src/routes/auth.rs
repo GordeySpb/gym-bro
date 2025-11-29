@@ -12,6 +12,7 @@ use crate::{
     response::ApiResponse,
     user::{RegisterUserRequest, UserResponse},
   },
+  utils::password_manager::PasswordManager,
 };
 
 const REGISTER_PATH: &str = "/auth/register";
@@ -31,7 +32,7 @@ pub async fn register(
     return Err(StatusCode::CONFLICT);
   }
 
-  let password_hash = hash(&payload.password, DEFAULT_COST).map_err(|e| {
+  let password_hash = PasswordManager::hash_password(&payload.password).map_err(|e| {
     eprintln!("Hashing password was wrong: {}", e);
     StatusCode::INTERNAL_SERVER_ERROR
   })?;
