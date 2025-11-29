@@ -18,6 +18,8 @@ use crate::{
 const REGISTER_PATH: &str = "/auth/register";
 const LOGIN_PATH: &str = "/auth/login";
 
+const MIN_EMAIL_LEN: usize = 5;
+
 pub async fn register(
   State(pool): State<DbPool>,
   Json(payload): Json<RegisterUserRequest>,
@@ -32,7 +34,7 @@ pub async fn register(
     return Err(StatusCode::CONFLICT);
   }
 
-  if !payload.email.contains('@') || payload.email.len() < 5 {
+  if !payload.email.contains('@') || payload.email.len() < MIN_EMAIL_LEN {
     eprintln!("email dosn't valid");
     return Err(StatusCode::CONFLICT);
   }
