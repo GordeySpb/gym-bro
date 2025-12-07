@@ -4,13 +4,12 @@ use axum::{
   http::StatusCode,
   routing::{delete, get, post, put},
 };
-use bcrypt::{DEFAULT_COST, hash, verify};
 
 use crate::{
   database::DbPool,
   models::{
     response::ApiResponse,
-    user::{RegisterUserRequest, UserResponse},
+    user::{LoginUserSchema, RegisterUserRequest, User, UserResponse},
   },
   utils::password_manager::PasswordManager,
 };
@@ -74,6 +73,29 @@ pub async fn register(
   }))
 }
 
+pub async fn login(
+  State(pool): State<DbPool>,
+  Json(payload): Json<LoginUserSchema>,
+) -> Result<Json<ApiResponse<()>>, StatusCode> {
+  let user = sqlx::query_as::<_, User>("SELECT * FROM users WHERE email = $1")
+    .bind(&payload.email)
+    .fetch_one(&pool)
+    .await
+    .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+
+  let is_valid_password = PasswordManager::verify_password(&payload.password, &user.password_hash)
+    .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+
+  if !is_valid_password {
+    return Err(StatusCode::UNAUTHORIZED);
+  }
+
+  Ok(Json(ApiResponse {
+    success: true,
+    data: (),
+  }))
+}
+
 pub fn routes() -> Router<DbPool> {
-  Router::new().route(REGISTER_PATH, post(register))
+  Router::new().route(REGISTER_PATH, post(register)).route(LOGIN_PATH, post(login))
 }
