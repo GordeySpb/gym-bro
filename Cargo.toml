@@ -24,3 +24,4 @@ uuid = { version = "1.0", features = ["v4", "serde"] }
 anyhow = "1.0"
 dotenvy = "0.15"
 bcrypt = "0.17.1"
+jsonwebtoken = "8.3"

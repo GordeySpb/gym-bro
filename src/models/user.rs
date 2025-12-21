@@ -13,13 +13,6 @@ pub struct User {
   pub updated_at: Option<DateTime<Utc>>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct TokenClaims {
-  pub sub: String,
-  pub iat: usize,
-  pub exp: usize,
-}
-
 #[derive(Debug, Deserialize)]
 pub struct RegisterUserRequest {
   pub name: String,

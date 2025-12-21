@@ -11,7 +11,7 @@ use crate::{
     response::ApiResponse,
     user::{LoginUserSchema, RegisterUserRequest, User, UserResponse},
   },
-  utils::password_manager::PasswordManager,
+  utils::{password_manager::PasswordManager, token_manager::TokenManager},
 };
 
 const REGISTER_PATH: &str = "/auth/register";
@@ -76,7 +76,7 @@ pub async fn register(
 pub async fn login(
   State(pool): State<DbPool>,
   Json(payload): Json<LoginUserSchema>,
-) -> Result<Json<ApiResponse<()>>, StatusCode> {
+) -> Result<Json<ApiResponse<String>>, StatusCode> {
   let user = sqlx::query_as::<_, User>("SELECT * FROM users WHERE email = $1")
     .bind(&payload.email)
     .fetch_one(&pool)
@@ -90,9 +90,26 @@ pub async fn login(
     return Err(StatusCode::UNAUTHORIZED);
   }
 
+  let token = TokenManager::generate_token(&user).map_err(|e| {
+    eprintln!("generating user access token was failed: {}", e);
+    StatusCode::INTERNAL_SERVER_ERROR
+  })?;
+
+  let token_from_db: String = sqlx::query_scalar(
+    "INSERT INTO access_tokens (user_id, token) VALUES ($1, $2) RETURNING token",
+  )
+  .bind(user.id)
+  .bind(&token)
+  .fetch_one(&pool)
+  .await
+  .map_err(|e| {
+    eprintln!("Failed to insert token: {}", e);
+    StatusCode::INTERNAL_SERVER_ERROR
+  })?;
+
   Ok(Json(ApiResponse {
     success: true,
-    data: (),
+    data: token_from_db,
   }))
 }
 

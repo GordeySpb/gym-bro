@@ -17,5 +17,12 @@ CREATE TABLE users (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
+CREATE TABLE access_tokens (
+    id UUID NOT NULL PRIMARY KEY DEFAULT gen_random_uuid(),
+    token TEXT NOT NULL UNIQUE,
+    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE
+);
+
 CREATE INDEX users_email_idx ON users (email);
-CREATE INDEX idx_users_username ON users(user_name);
+CREATE INDEX users_username_idx ON users(user_name);
+CREATE INDEX access_tokens_ids ON access_tokens(user_id);
